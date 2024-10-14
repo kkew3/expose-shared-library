@@ -13,7 +13,7 @@ For usage, please refer to [`examples/mixed-rust-python-project/build.rs`](./exa
 ## Installation
 
 ```bash
-cargo add --git https://github.com/kkew3/manual-build-pyo3.git --build
+cargo add --git https://github.com/kkew3/manual-build-pyo3.git --tag 0.1.0 --build
 ```
 
 ## Known issue
