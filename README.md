@@ -11,7 +11,7 @@ This function exposes the rust shared library to python side according to [pyo3 
 ## Installation
 
 ```bash
-cargo add --git https://github.com/kkew3/manual-build-pyo3.git
+cargo add --git https://github.com/kkew3/manual-build-pyo3.git --build
 ```
 
 ## Known issue
