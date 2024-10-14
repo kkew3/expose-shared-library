@@ -8,6 +8,8 @@ This can be useful in various circumstances.
 Only one function is provided: `expose_shared_library`.
 This function exposes the rust shared library to python side according to [pyo3 doc][pyo3-doc].
 
+For usage, please refer to [`examples/mixed-rust-python-project/build.rs`](./examples/mixed-rust-python-project/build.rs).
+
 ## Installation
 
 ```bash
