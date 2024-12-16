@@ -7,7 +7,9 @@ use std::{env, fs, io};
 #[cfg(target_os = "windows")]
 fn get_shared_lib_paths() -> (String, String) {
     let pkg_name = env::var("CARGO_PKG_NAME").unwrap();
-    let source: String = ["lib", &pkg_name, ".dll"].concat();
+    // From my experiment, the output dll name does not start with "lib", at
+    // least on Windows 10.
+    let source: String = [&pkg_name, ".dll"].concat();
     let dest: String = [&pkg_name, ".pyd"].concat();
     (source, dest)
 }
