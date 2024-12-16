@@ -25,8 +25,8 @@ fn get_shared_lib_paths() -> (String, String) {
 #[cfg(target_os = "linux")]
 fn get_shared_lib_paths() -> (String, String) {
     let pkg_name = env::var("CARGO_PKG_NAME").unwrap();
-    let source: String = ["lib", &pkg_name, ".so"].iter().collect();
-    let dest: String = [&pkg_name, ".so"].iter().collect();
+    let source: String = ["lib", &pkg_name, ".so"].concat();
+    let dest: String = [&pkg_name, ".so"].concat();
     (source, dest)
 }
 
