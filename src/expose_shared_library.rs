@@ -1,32 +1,39 @@
-//! See https://pyo3.rs/v0.22.2/building-and-distribution#manual-builds for
+//! For `py` feature,
+//! https://pyo3.rs/v0.22.2/building-and-distribution#manual-builds for
 //! details.
 
 use std::path::{Path, PathBuf};
 use std::{env, fs, io};
 
-#[cfg(target_os = "windows")]
+#[cfg(all(target_os = "windows", feature = "py"))]
 fn get_shared_lib_paths() -> (String, String) {
     let pkg_name = env::var("CARGO_PKG_NAME").unwrap();
-    // From my experiment, the output dll name does not start with "lib", at
-    // least on Windows 10.
-    let source: String = [&pkg_name, ".dll"].concat();
-    let dest: String = [&pkg_name, ".pyd"].concat();
+    let source = [&pkg_name, ".dll"].concat();
+    let dest = [&pkg_name, ".pyd"].concat();
     (source, dest)
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(all(target_os = "windows", feature = "lua"))]
 fn get_shared_lib_paths() -> (String, String) {
     let pkg_name = env::var("CARGO_PKG_NAME").unwrap();
-    let source: String = ["lib", &pkg_name, ".dylib"].concat();
-    let dest: String = [&pkg_name, ".so"].concat();
+    let source = [&pkg_name, ".dll"].concat();
+    let dest = [&pkg_name, ".dll"].concat();
     (source, dest)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(all(target_os = "macos", any(feature = "py", feature = "lua")))]
 fn get_shared_lib_paths() -> (String, String) {
     let pkg_name = env::var("CARGO_PKG_NAME").unwrap();
-    let source: String = ["lib", &pkg_name, ".so"].concat();
-    let dest: String = [&pkg_name, ".so"].concat();
+    let source = ["lib", &pkg_name, ".dylib"].concat();
+    let dest = [&pkg_name, ".so"].concat();
+    (source, dest)
+}
+
+#[cfg(all(target_os = "linux", any(feature = "py", feature = "lua")))]
+fn get_shared_lib_paths() -> (String, String) {
+    let pkg_name = env::var("CARGO_PKG_NAME").unwrap();
+    let source = ["lib", &pkg_name, ".so"].concat();
+    let dest = [&pkg_name, ".so"].concat();
     (source, dest)
 }
 
@@ -45,14 +52,14 @@ fn create_link(dylib_src: &Path, so: &Path) -> Result<(), io::Error> {
     Ok(())
 }
 
-/// Expose the built target as a shared library for python. `pylib_dir` is the
-/// directory to place the shared library. Return [`io::Error`] on error.
+/// Expose the built target as a shared library. `output_dir` is the directory
+/// to place the shared library. Return [`io::Error`] on error.
 pub fn expose_shared_library(
-    pylib_dir: impl AsRef<Path>,
+    output_dir: impl AsRef<Path>,
 ) -> Result<(), io::Error> {
     let (source, dest) = get_shared_lib_paths();
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let so: PathBuf = [pylib_dir.as_ref(), Path::new(&dest)].iter().collect();
+    let so: PathBuf = [output_dir.as_ref(), Path::new(&dest)].iter().collect();
     let profile = env::var("PROFILE").unwrap();
     let dylib_src: PathBuf = [
         Path::new(&manifest_dir),

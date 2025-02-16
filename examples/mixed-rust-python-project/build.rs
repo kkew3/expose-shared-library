@@ -6,5 +6,5 @@ fn main() {
         [env!("CARGO_MANIFEST_DIR"), "python/my_package"]
             .iter()
             .collect();
-    manual_build_pyo3::expose_shared_library(my_package_dir).unwrap();
+    expose_shared_library::expose_shared_library(my_package_dir).unwrap();
 }
