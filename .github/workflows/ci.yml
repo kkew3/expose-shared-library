@@ -92,7 +92,7 @@ jobs:
               # Reference: https://github.com/chipsenkbeil/distant.nvim/issues/57#issuecomment-969256617
               export LUA_INC="$GITHUB_WORKSPACE/.lua/include"
               export LUA_LIB="$GITHUB_WORKSPACE/.lua/lib"
-              export LUA_LIB_NAME=lua51
+              export LUA_LIB_NAME=lua
               # Reference: https://github.com/rust-lang/cargo/issues/3687#issuecomment-336762567
               case ${{ matrix.job.os }} in
                 windows-*)
@@ -127,7 +127,7 @@ jobs:
               # Reference: https://github.com/chipsenkbeil/distant.nvim/issues/57#issuecomment-969256617
               export LUA_INC="$GITHUB_WORKSPACE/.lua/include"
               export LUA_LIB="$GITHUB_WORKSPACE/.lua/lib"
-              export LUA_LIB_NAME=lua51
+              export LUA_LIB_NAME=lua
               # Reference: https://github.com/rust-lang/cargo/issues/3687#issuecomment-336762567
               case ${{ matrix.job.os }} in
                 windows-*)
