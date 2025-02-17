@@ -8,7 +8,7 @@ name = "sum_as_string_rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-mlua = { version = "0.10", features = ["lua51", "module", "vendored"] }
+mlua = { version = "0.10", features = ["lua51", "module"] }
 
 [build-dependencies]
 expose-shared-library = { path = "../..", features = ["lua"] }
