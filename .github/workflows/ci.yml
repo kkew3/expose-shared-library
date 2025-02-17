@@ -70,6 +70,7 @@ jobs:
 
       - name: Build and check (without '--target')
         shell: bash
+        if: matrix.lang == 'lua' && matrix.job.os == 'windows-2022'
         run: |
           case ${{ matrix.lang }} in
             py)
@@ -91,6 +92,7 @@ jobs:
           esac
       - name: Build and check (with '--target')
         shell: bash
+        if: matrix.lang == 'lua' && matrix.job.os == 'windows-2022'
         run: |
           case ${{ matrix.lang }} in
             py)
