@@ -40,6 +40,13 @@ jobs:
         uses: leafo/gh-actions-lua@v10
         with:
           luaVersion: '5.1.5'
+      # Reference: https://github.com/chipsenkbeil/distant.nvim/issues/57#issuecomment-971992482
+      - name: Copy lua lib files
+        if: matrix.lang == 'lua' && matrix.job.os == 'windows-2022'
+        shell: bash
+        run: |
+          cp .lua/lib/lua51.dll .lua/lib/lua.dll
+          cp .lua/lib/lua51.lib .lua/lib/lua.lib
       - name: List lua directory
         if: matrix.lang == 'lua'
         run: |
