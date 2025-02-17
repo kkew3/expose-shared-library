@@ -33,11 +33,6 @@ cargo add \
 depending on the desired feature.
 One of the features "py" or "lua" must be enabled, but not both.
 
-## Known issue
-
-The crate hard-codes the target directory as "target". It currently does not respect [cargo config][build-target-dir].
-
 
 [maturin]: https://www.maturin.rs
 [pyo3-doc]: https://pyo3.rs/v0.22.2/building-and-distribution#manual-builds
-[build-target-dir]: https://doc.rust-lang.org/cargo/reference/config.html#buildtarget-dir

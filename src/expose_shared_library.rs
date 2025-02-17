@@ -58,16 +58,10 @@ pub fn expose_shared_library(
     output_dir: impl AsRef<Path>,
 ) -> Result<(), io::Error> {
     let (source, dest) = get_shared_lib_paths();
-    let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let build_output_dir = out_dir.ancestors().nth(3).unwrap();
     let so: PathBuf = [output_dir.as_ref(), Path::new(&dest)].iter().collect();
-    let profile = env::var("PROFILE").unwrap();
-    let dylib_src: PathBuf = [
-        Path::new(&manifest_dir),
-        Path::new("target"),
-        Path::new(&profile),
-        Path::new(&source),
-    ]
-    .iter()
-    .collect();
+    let dylib_src: PathBuf =
+        [build_output_dir, Path::new(&source)].iter().collect();
     ensure_not_exists(&so).and_then(|_| create_link(&dylib_src, &so))
 }
