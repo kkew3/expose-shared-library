@@ -44,8 +44,11 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
+          # As of 2025-02-17, the latest rustc version >1.77.2, which means
+          # Windows 7 is not supported. To support Windows 7, we will need to
+          # downgrade mlua's version in the lua example. However, for
+          # illustrative purpose, we will keep the latest version here.
           targets: ${{ matrix.job.target }}
-          toolchain: "${{ contains(matrix.job.target, 'windows-') && '1.77.2' || 'stable' }}"
 
       - name: Show version information
         shell: bash
