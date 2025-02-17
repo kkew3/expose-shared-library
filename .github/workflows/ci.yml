@@ -70,14 +70,14 @@ jobs:
 
       # Reference: https://github.com/rust-lang/cargo/issues/3687#issuecomment-336762567
       - name: Place MSVC to the front of PATH
-        if: matrix.job.os == 'windows-2022'
+        if: matrix.lang == 'lua' && matrix.job.os == 'windows-2022'
         shell: bash
         run: |
           MSVC_PATH="$(echo "$PATH" | tr : '\n' | grep MSVC | head -n1)"
           echo "PATH=$MSVC_PATH:$PATH" >> $GITHUB_ENV
 
       - name: Ensure MSVC's link is in PATH
-        if: matrix.job.os == 'windows-2022'
+        if: matrix.lang == 'lua' && matrix.job.os == 'windows-2022'
         shell: bash
         run: which link
 
