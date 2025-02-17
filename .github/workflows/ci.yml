@@ -40,6 +40,11 @@ jobs:
         uses: leafo/gh-actions-lua@v10
         with:
           luaVersion: '5.1.5'
+      - name: List lua directory
+        if: matrix.lang == 'lua'
+        run: |
+          ls -l .lua/include
+          ls -l .lua/lib
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
