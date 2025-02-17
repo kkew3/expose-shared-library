@@ -68,27 +68,6 @@ jobs:
               ;;
           esac
 
-      - name: Check PATH before (debugging)
-        shell: bash
-        run: echo "$PATH"
-
-      # Reference: https://github.com/rust-lang/cargo/issues/3687#issuecomment-336762567
-      - name: Place MSVC to the front of PATH
-        if: matrix.lang == 'lua' && matrix.job.os == 'windows-2022'
-        shell: bash
-        run: |
-          MSVC_PATH="$(echo "$PATH" | tr : '\n' | grep MSVC | head -n1)"
-          echo "$MSVC_PATH" >> $GITHUB_PATH
-
-      - name: Check PATH after (debugging)
-        shell: bash
-        run: echo "$PATH"
-
-      - name: Ensure MSVC's link is in PATH
-        if: matrix.lang == 'lua' && matrix.job.os == 'windows-2022'
-        shell: bash
-        run: which link
-
       - name: Build and check (without '--target')
         shell: bash
         run: |
@@ -105,7 +84,17 @@ jobs:
               cd examples/mixed-rust-lua-project
               find lua -type f -name '*.so' -o -name '*.dll' -exec rm -f {} +
               cargo clean
-              cargo build --release
+              # Reference: https://github.com/rust-lang/cargo/issues/3687#issuecomment-336762567
+              case ${{ matrix.job.os }} in
+                windows-*)
+                  MSVC_PATH="$(echo "$PATH" | tr : '\n' | grep MSVC | head -n1)"
+                  export PATH="$MSVC_PATH:$PATH"
+                  cargo build --release
+                  ;;
+                *)
+                  cargo build --release
+                  ;;
+              esac
               cd lua
               lua main.lua
               ;;
@@ -126,7 +115,17 @@ jobs:
               cd examples/mixed-rust-lua-project
               find lua -type f -name '*.so' -o -name '*.dll' -exec rm -f {} +
               cargo clean
-              cargo build --release --target=${{ matrix.job.target }}
+              # Reference: https://github.com/rust-lang/cargo/issues/3687#issuecomment-336762567
+              case ${{ matrix.job.os }} in
+                windows-*)
+                  MSVC_PATH="$(echo "$PATH" | tr : '\n' | grep MSVC | head -n1)"
+                  export PATH="$MSVC_PATH:$PATH"
+                  cargo build --release --target=${{ matrix.job.target }}
+                  ;;
+                *)
+                  cargo build --release --target=${{ matrix.job.target }}
+                  ;;
+              esac
               cd lua
               lua main.lua
               ;;
