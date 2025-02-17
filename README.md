@@ -8,7 +8,7 @@ Now it serves to expose the shared library to both python and lua.
 Only one function is provided: `expose_shared_library`.
 This function exposes the rust shared library to python/lua side according to [pyo3 doc][pyo3-doc].
 
-For usage, please refer to [`examples/mixed-rust-python-project/build.rs`](./examples/mixed-rust-python-project/build.rs).
+For usage, please refer to [`examples/mixed-rust-python-project/build.rs`](./examples/mixed-rust-python-project/build.rs) and [`examples/mixed-rust-lua-project/build.rs`](./examples/mixed-rust-lua-project/build.rs).
 
 ## Installation
 
