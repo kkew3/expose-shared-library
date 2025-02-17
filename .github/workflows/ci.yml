@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+  push:
+    tags:
+      - '[0-9]*'
+
+jobs:
+  ci:
+    name: CI for ${{ matrix.lang }} @ ${{ matrix.job.os }}
+    runs-on: ${{ matrix.job.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        lang:
+          - py
+          - lua
+        job:
+          - { os: ubuntu-22.04, target: x86_64-unknown-linux-gnu }
+          - { os: windows-2022, target: x86_64-pc-windows-msvc }
+          - { os: macos-14, target: aarch64-apple-darwin }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup python
+        if: matrix.lang == 'py'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install lua prerequisite
+        if: matrix.lang == 'lua'
+        uses: ilammy/msvc-dev-cmd@v1
+      - name: Setup lua
+        if: matrix.lang == 'lua'
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: '5.1.5'
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.job.target }}
+          toolchain: "${{ contains(matrix.job.target, 'windows-') && '1.77.2' || 'stable' }}"
+
+      - name: Show version information
+        shell: bash
+        run: |
+          gcc --version || true
+          rustup -V
+          rustup toolchain list
+          rustup default
+          cargo -V
+          rustc -V
+          case ${{ matrix.lang }} in
+            py)
+              python3 -V
+              ;;
+            lua)
+              lua -v
+              ;;
+          esac
+
+      - name: Build and check (without '--target')
+        shell: bash
+        run: |
+          case ${{ matrix.lang }} in
+            py)
+              cd examples/mixed-rust-python-project
+              find python -type f -name '*.so' -o -name '*.dll' -o -name '*.pyd' -exec rm -f {} +
+              cargo clean
+              cargo build --release
+              cd python
+              python3 -c "from my_package import sum_as_string_rs; print(repr(sum_as_string_rs.sum_as_string(1, 2)))"
+              ;;
+            lua)
+              cd examples/mixed-rust-lua-project
+              find lua -type f -name '*.so' -o -name '*.dll' -exec rm -f {} +
+              cargo clean
+              cargo build --release
+              cd lua
+              lua main.lua
+              ;;
+          esac
+      - name: Build and check (with '--target')
+        shell: bash
+        run: |
+          case ${{ matrix.lang }} in
+            py)
+              cd examples/mixed-rust-python-project
+              find python -type f -name '*.so' -o -name '*.dll' -o -name '*.pyd' -exec rm -f {} +
+              cargo clean
+              cargo build --release --target=${{ matrix.job.target }}
+              cd python
+              python3 -c "from my_package import sum_as_string_rs; print(repr(sum_as_string_rs.sum_as_string(1, 2)))"
+              ;;
+            lua)
+              cd examples/mixed-rust-lua-project
+              find lua -type f -name '*.so' -o -name '*.dll' -exec rm -f {} +
+              cargo clean
+              cargo build --release --target=${{ matrix.job.target }}
+              cd lua
+              lua main.lua
+              ;;
+          esac
