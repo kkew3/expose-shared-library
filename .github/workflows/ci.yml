@@ -74,15 +74,12 @@ jobs:
         shell: bash
         run: |
           MSVC_PATH="$(echo "$PATH" | tr : '\n' | grep MSVC | head -n1)"
-          echo "PATH=$MSVC_PATH:$PATH" >> $GITHUB_ENV
+          echo "$MSVC_PATH" >> $GITHUB_PATH
 
       - name: Ensure MSVC's link is in PATH
         if: matrix.lang == 'lua' && matrix.job.os == 'windows-2022'
         shell: bash
         run: which link
-
-      - name: Debug before running build
-        uses: fawazahmed0/action-debug-vscode@main
 
       - name: Build and check (without '--target')
         shell: bash
