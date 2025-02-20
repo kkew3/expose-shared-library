@@ -16,20 +16,18 @@ For usage, please refer to [`examples/mixed-rust-python-project/build.rs`](./exa
 
 ```bash
 cargo add \
-    --git https://github.com/kkew3/manual-build-pyo3.git \
-    --tag 0.1.3 --build \
-    expose-shared-library
-    --features py
+    --git https://github.com/kkew3/expose-shared-library.git \
+    expose-shared-library \
+    --tag 0.1.4 --build --features py
 ```
 
 or
 
 ```bash
 cargo add \
-    --git https://github.com/kkew3/manual-build-pyo3.git \
-    --tag 0.1.3 --build \
-    expose-shared-library
-    --features lua
+    --git https://github.com/kkew3/expose-shared-library.git \
+    expose-shared-library \
+    --tag 0.1.4 --build --features lua
 ```
 
 depending on the desired feature.
