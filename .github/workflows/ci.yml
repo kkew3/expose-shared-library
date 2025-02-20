@@ -128,6 +128,7 @@ jobs:
         with:
           python-version: '3.9'
 
+      - uses: ilammy/msvc-dev-cmd@v1
       - name: Setup lua
         if: matrix.lang == 'lua'
         uses: leafo/gh-actions-lua@v10
