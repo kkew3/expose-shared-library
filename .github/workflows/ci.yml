@@ -122,21 +122,45 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup msys2 and install dependencies
-        uses: msys2/setup-msys2@v2
+      - name: Setup python
+        if: matrix.lang == 'py'
+        uses: actions/setup-python@v5
         with:
-          install: >-
-            gcc
-            mingw-w64-x86_64-lua51
-            mingw-w64-x86_64-python
-            mingw-w64-x86_64-pkg-config
+          python-version: '3.9'
 
-      - name: Setup rust
-        shell: msys2 {0}
+      - name: Setup lua
+        if: matrix.lang == 'lua'
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: '5.1.5'
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # As of 2025-02-17, the latest rustc version >1.77.2, which means
+          # Windows 7 is not supported. To support Windows 7, we will need to
+          # downgrade mlua's version in the lua example. However, for
+          # illustrative purpose, we will keep the latest version here.
+          targets: ${{ matrix.job.target }}
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install pkg-config and friends
+        shell: bash
         run: |
-          curl -fSLO https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-gnu/rustup-init.exe
-          env RUSTUP_HOME=.rustup CARGO_HOME=.cargo ./rustup-init.exe -y --default-toolchain stable --no-modify-path --verbose
-          echo CARGO_HOME="$(pwd)/.cargo/bin" >> $GITHUB_ENV
+          mkdir -p .local
+          curl -fSLO http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/pkg-config_0.26-1_win32.zip
+          unzip pkg-config_0.26-1_win32.zip "bin/*.exe" -d .local
+          rm pkg-config_0.26-1_win32.zip
+          curl -fSLO http://ftp.gnome.org/pub/gnome/binaries/win32/glib/2.28/glib_2.28.8-1_win32.zip
+          unzip glib_2.28.8-1_win32.zip "bin/*.dll" -d .local
+          rm glib_2.28.8-1_win32.zip
+          curl -fSLO http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/gettext-runtime_0.18.1.1-2_win32.zip
+          unzip gettext-runtime_0.18.1.1-2_win32.zip "bin/*.dll" -d .local
+          rm gettext-runtime_0.18.1.1-2_win32.zip
+          echo "$(pwd)/.local" >> $GITHUB_PATH
+
+      - name: Debug before showing version
+        uses: fawazahmed0/action-debug-vscode@main
 
       - name: Show version information
         shell: msys2 {0}
