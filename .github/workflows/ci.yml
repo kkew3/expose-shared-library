@@ -32,12 +32,13 @@ jobs:
         with:
           python-version: '3.9'
 
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: matrix.lang == 'lua'
       - name: Setup lua
         if: matrix.lang == 'lua'
         uses: leafo/gh-actions-lua@v10
         with:
           luaVersion: '5.1.5'
-          buildCache: false
       - name: Export lua env variables
         if: matrix.job.os == 'windows-2022' && matrix.lang == 'lua'
         shell: bash
@@ -89,7 +90,8 @@ jobs:
             lua)
               case ${{ matrix.job.os }} in
                 windows-*)
-                  export PATH="$(pwd)/.lua/lib:$PATH"
+                  MSVC_PATH="$(echo "$PATH" | tr : '\n' | grep MSVC | head -n1)"
+                  export PATH="$(pwd)/.lua/lib:$MSVC_PATH:$PATH"
                   ;;
               esac
               cd examples/mixed-rust-lua-project
@@ -115,7 +117,8 @@ jobs:
             lua)
               case ${{ matrix.job.os }} in
                 windows-*)
-                  export PATH="$(pwd)/.lua/lib:$PATH"
+                  MSVC_PATH="$(echo "$PATH" | tr : '\n' | grep MSVC | head -n1)"
+                  export PATH="$(pwd)/.lua/lib:$MSVC_PATH:$PATH"
                   ;;
               esac
               cd examples/mixed-rust-lua-project
