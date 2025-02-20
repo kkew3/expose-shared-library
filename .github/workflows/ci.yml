@@ -188,7 +188,9 @@ jobs:
       - name: Show version information
         shell: bash
         run: |
+          export PATH="$(pwd)/.local/bin:$PATH"
           gcc --version || true
+          pkg-config --version || true
           rustup -V
           rustup toolchain list
           rustup default
@@ -202,6 +204,9 @@ jobs:
               lua -v
               ;;
           esac
+
+      - name: Debug before running build
+        uses: fawazahmed0/action-debug-vscode@main
 
       - name: Build and check (without '--target')
         shell: bash
