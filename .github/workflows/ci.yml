@@ -37,6 +37,7 @@ jobs:
         uses: leafo/gh-actions-lua@v10
         with:
           luaVersion: '5.1.5'
+          buildCache: false
       - name: Export lua env variables
         if: matrix.job.os == 'windows-2022' && matrix.lang == 'lua'
         shell: bash
