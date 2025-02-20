@@ -145,9 +145,21 @@ jobs:
         shell: bash
         run: |
           cd .lua
-          echo "Name: Lua" > lua.pc
-          echo "Cflags: -I$(pwd)/include" >> lua.pc
-          echo "Libs: -L$(pwd)/lib -llua51 -lm" >> lua.pc
+          echo 'V= 5.1' > lua.pc
+          echo 'R= 5.1.5' >> lua.pc
+          echo "prefix= $(pwd)/.lua" >> lua.pc
+          echo 'INSTALL_BIN= ${prefix}/bin' >> lua.pc
+          echo 'INSTALL_INC= ${prefix}/include' >> lua.pc
+          echo 'INSTALL_LIB= ${prefix}/lib' >> lua.pc
+          echo 'exec_prefix=${prefix}' >> lua.pc
+          echo 'libdir=${exec_prefix}/lib' >> lua.pc
+          echo 'includedir=${prefix}/include' >> lua.pc
+          echo 'Name: Lua' >> lua.pc
+          echo 'Description: An Extensible Extension Language' >> lua.pc
+          echo 'Version: ${R}' >> lua.pc
+          echo 'Requires:' >> lua.pc
+          echo 'Libs: -L${libdir} -llua51 -lm' >> lua.pc
+          echo 'Cflags: -I${includedir}' >> lua.pc
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
