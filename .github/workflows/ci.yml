@@ -131,16 +131,10 @@ jobs:
             mingw-w64-x86_64-rust
             mingw-w64-x86_64-pkg-config
 
-      - name: Debug before showing version
-        uses: fawazahmed0/action-debug-vscode@main
-
       - name: Show version information
         shell: msys2 {0}
         run: |
           gcc --version || true
-          rustup -V
-          rustup toolchain list
-          rustup default
           cargo -V
           rustc -V
           case ${{ matrix.lang }} in
