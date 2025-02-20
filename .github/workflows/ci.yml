@@ -133,11 +133,6 @@ jobs:
         uses: leafo/gh-actions-lua@v10
         with:
           luaVersion: '5.1.5'
-      - name: Copy lua lib files
-        if: matrix.lang == 'lua'
-        shell: bash
-        run: |
-          cd .lua/lib
       - name: Export lua env variables
         shell: bash
         run: |
