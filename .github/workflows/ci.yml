@@ -1,0 +1,127 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+  push:
+    tags:
+      - '[0-9]*'
+
+jobs:
+  ci:
+    name: CI for ${{ matrix.lang }} @ ${{ matrix.job.os }}
+    runs-on: ${{ matrix.job.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        lang:
+          - py
+          - lua
+        job:
+          - { os: ubuntu-22.04, target: x86_64-unknown-linux-gnu }
+          - { os: windows-2022, target: x86_64-pc-windows-msvc }
+          - { os: macos-14, target: aarch64-apple-darwin }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup python
+        if: matrix.lang == 'py'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Setup lua
+        if: matrix.lang == 'lua'
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: '5.1.5'
+      - name: Export lua env variables
+        if: matrix.job.os == 'windows-2022' && matrix.lang == 'lua'
+        shell: bash
+        run: |
+          echo LUA_LIB="$(pwd)/.lua/lib" >> $GITHUB_ENV
+          echo LUA_LIB_NAME="lua51" >> $GITHUB_ENV
+          echo "$(pwd)/.lua/lib" >> $GITHUB_PATH
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # As of 2025-02-17, the latest rustc version >1.77.2, which means
+          # Windows 7 is not supported. To support Windows 7, we will need to
+          # downgrade mlua's version in the lua example. However, for
+          # illustrative purpose, we will keep the latest version here.
+          targets: ${{ matrix.job.target }}
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Show version information
+        shell: bash
+        run: |
+          gcc --version || true
+          rustup -V
+          rustup toolchain list
+          rustup default
+          cargo -V
+          rustc -V
+          case ${{ matrix.lang }} in
+            py)
+              python3 -V
+              ;;
+            lua)
+              lua -v
+              ;;
+          esac
+
+      - name: Build and check (without '--target')
+        shell: bash
+        run: |
+          case ${{ matrix.lang }} in
+            py)
+              cd examples/mixed-rust-python-project
+              find python -type f -name '*.so' -o -name '*.dll' -o -name '*.pyd' -exec rm -f {} +
+              cargo clean
+              cargo build --release
+              cd python
+              python3 main.py
+              ;;
+            lua)
+              case ${{ matrix.job.os }} in
+                windows-*)
+                  export PATH="$(pwd)/.lua/lib:$PATH"
+                  ;;
+              esac
+              cd examples/mixed-rust-lua-project
+              find lua -type f -name '*.so' -o -name '*.dll' -exec rm -f {} +
+              cargo clean
+              cargo build --release
+              cd lua
+              lua main.lua
+              ;;
+          esac
+      - name: Build and check (with '--target')
+        shell: bash
+        run: |
+          case ${{ matrix.lang }} in
+            py)
+              cd examples/mixed-rust-python-project
+              find python -type f -name '*.so' -o -name '*.dll' -o -name '*.pyd' -exec rm -f {} +
+              cargo clean
+              cargo build --release --target=${{ matrix.job.target }}
+              cd python
+              python3 main.py
+              ;;
+            lua)
+              case ${{ matrix.job.os }} in
+                windows-*)
+                  export PATH="$(pwd)/.lua/lib:$PATH"
+                  ;;
+              esac
+              cd examples/mixed-rust-lua-project
+              find lua -type f -name '*.so' -o -name '*.dll' -exec rm -f {} +
+              cargo clean
+              cargo build --release --target=${{ matrix.job.target }}
+              cd lua
+              lua main.lua
+              ;;
+          esac
