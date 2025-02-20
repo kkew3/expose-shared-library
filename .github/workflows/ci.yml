@@ -138,9 +138,6 @@ jobs:
           env RUSTUP_HOME=.rustup CARGO_HOME=.cargo ./rustup-init.exe -y --default-toolchain stable --no-modify-path --verbose
           echo CARGO_HOME="$(pwd)/.cargo/bin" >> $GITHUB_ENV
 
-      - name: Debug before showing version
-        uses: fawazahmed0/action-debug-vscode@main
-
       - name: Show version information
         shell: msys2 {0}
         run: |
