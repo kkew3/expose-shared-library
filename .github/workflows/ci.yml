@@ -159,6 +159,15 @@ jobs:
           rm gettext-runtime_0.18.1.1-2_win32.zip
           echo "$(pwd)/.local" >> $GITHUB_PATH
 
+      - name: Setup msys2 and install dependencies
+        uses: msys2/setup-msys2@v2
+        with:
+          install: >-
+            gcc
+            mingw-w64-x86_64-lua51
+            mingw-w64-x86_64-python
+            mingw-w64-x86_64-pkg-config
+
       - name: Debug before showing version
         uses: fawazahmed0/action-debug-vscode@main
 
