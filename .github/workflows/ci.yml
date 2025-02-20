@@ -138,8 +138,6 @@ jobs:
         shell: bash
         run: |
           cd .lua/lib
-          cp lua51.dll lua.dll
-          cp lua51.dll liblua.dll
           cp lua51.dll liblua51.dll
       - name: Export lua env variables
         shell: bash
@@ -175,9 +173,6 @@ jobs:
               lua -v
               ;;
           esac
-
-      - name: Debug before running build
-        uses: fawazahmed0/action-debug-vscode@main
 
       - name: Build and check (without '--target')
         shell: bash
