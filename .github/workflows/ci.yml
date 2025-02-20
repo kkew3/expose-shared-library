@@ -138,9 +138,6 @@ jobs:
         shell: bash
         run: |
           cd .lua/lib
-          cp lua51.dll lua.dll
-          cp lua51.dll liblua.dll
-          cp lua51.dll liblua51.dll
       - name: Export lua env variables
         shell: bash
         run: |
