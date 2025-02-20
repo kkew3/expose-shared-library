@@ -1,5 +1,7 @@
 # expose-shared-library
 
+[![ci](https://github.com/kkew3/expose-shared-library/actions/workflows/ci.yml/badge.svg)](https://github.com/kkew3/expose-shared-library/actions/workflows/ci.yml)
+
 The crate originally intended to simplify manual build of pyo3 without [`maturin`][maturin], which can be useful in various circumstances.
 Now it serves to expose the shared library to both python and lua.
 
