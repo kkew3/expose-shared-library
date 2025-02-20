@@ -128,13 +128,22 @@ jobs:
           install: >-
             mingw-w64-x86_64-lua51
             mingw-w64-x86_64-python
-            mingw-w64-x86_64-rust
             mingw-w64-x86_64-pkg-config
+
+      - name: Setup rust
+        shell: msys2 {0}
+        run: |
+          curl -fSLO https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-gnu/rustup-init.exe
+          ./rustup-init.exe -y --default-toolchain stable --no-modify-path --verbose
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Show version information
         shell: msys2 {0}
         run: |
           gcc --version || true
+          rustup -V
+          rustup toolchain list
+          rustup default
           cargo -V
           rustc -V
           case ${{ matrix.lang }} in
