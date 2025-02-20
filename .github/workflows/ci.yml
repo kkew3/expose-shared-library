@@ -134,12 +134,14 @@ jobs:
         with:
           luaVersion: '5.1.5'
       - name: Copy lua lib
+        if: matrix.lang == 'lua'
         shell: bash
         run: |
           cd .lua/lib
           cp lua51.dll liblua51.dll
           cp lua51.lib liblua51.lib
       - name: Create lua pc
+        if: matrix.lang == 'lua'
         shell: bash
         run: |
           cd .lua
@@ -185,7 +187,7 @@ jobs:
               python3 -V
               ;;
             lua)
-              lua5.1 -v
+              lua -v
               ;;
           esac
 
