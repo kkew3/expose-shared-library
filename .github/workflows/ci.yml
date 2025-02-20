@@ -176,9 +176,6 @@ jobs:
               ;;
           esac
 
-      - name: Debug before running build
-        uses: fawazahmed0/action-debug-vscode@main
-
       - name: Build and check (without '--target')
         shell: bash
         run: |
@@ -192,6 +189,7 @@ jobs:
               python3 main.py
               ;;
             lua)
+              export PATH="$(pwd)/.lua/lib:$PATH"
               cd examples/mixed-rust-lua-project
               find lua -type f -name '*.so' -o -name '*.dll' -exec rm -f {} +
               cargo clean
@@ -213,6 +211,7 @@ jobs:
               python3 main.py
               ;;
             lua)
+              export PATH="$(pwd)/.lua/lib:$PATH"
               cd examples/mixed-rust-lua-project
               find lua -type f -name '*.so' -o -name '*.dll' -exec rm -f {} +
               cargo clean
