@@ -131,6 +131,9 @@ jobs:
             mingw-w64-x86_64-rust
             mingw-w64-x86_64-pkg-config
 
+      - name: Debug before showing version
+        uses: fawazahmed0/action-debug-vscode@main
+
       - name: Show version information
         shell: msys2 {0}
         run: |
