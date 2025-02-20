@@ -142,7 +142,7 @@ jobs:
               python3 -V
               ;;
             lua)
-              lua -v
+              lua5.1 -v
               ;;
           esac
 
@@ -164,7 +164,7 @@ jobs:
               cargo clean
               cargo build --release
               cd lua
-              lua main.lua
+              lua5.1 main.lua
               ;;
           esac
       - name: Build and check (with '--target')
@@ -185,6 +185,6 @@ jobs:
               cargo clean
               cargo build --release --target=${{ matrix.job.target }}
               cd lua
-              lua main.lua
+              lua5.1 main.lua
               ;;
           esac
