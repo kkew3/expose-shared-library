@@ -133,33 +133,12 @@ jobs:
         uses: leafo/gh-actions-lua@v10
         with:
           luaVersion: '5.1.5'
-      - name: Copy lua lib
-        if: matrix.lang == 'lua'
+      - name: Export lua env variables
         shell: bash
         run: |
-          cd .lua/lib
-          cp lua51.dll liblua51.dll
-          cp lua51.lib liblua51.lib
-      - name: Create lua pc
-        if: matrix.lang == 'lua'
-        shell: bash
-        run: |
-          cd .lua
-          echo 'V= 5.1' > lua51.pc
-          echo 'R= 5.1.5' >> lua51.pc
-          echo "prefix= $(pwd)" >> lua51.pc
-          echo 'INSTALL_BIN= ${prefix}/bin' >> lua51.pc
-          echo 'INSTALL_INC= ${prefix}/include' >> lua51.pc
-          echo 'INSTALL_LIB= ${prefix}/lib' >> lua51.pc
-          echo 'exec_prefix=${prefix}' >> lua51.pc
-          echo 'libdir=${exec_prefix}/lib' >> lua51.pc
-          echo 'includedir=${prefix}/include' >> lua51.pc
-          echo 'Name: Lua' >> lua51.pc
-          echo 'Description: An Extensible Extension Language' >> lua51.pc
-          echo 'Version: ${R}' >> lua51.pc
-          echo 'Requires:' >> lua51.pc
-          echo 'Libs: -L${libdir} -llua51 -lm' >> lua51.pc
-          echo 'Cflags: -I${includedir}' >> lua51.pc
+          echo LUA_LIB="$(pwd)/.lua/lib" >> $GITHUB_ENV
+          echo LUA_LIB_NAME="lua51" >> $GITHUB_ENV
+          echo "$(pwd)/.lua/lib" >> $GITHUB_PATH
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -171,26 +150,10 @@ jobs:
           targets: ${{ matrix.job.target }}
       - uses: Swatinem/rust-cache@v2
 
-      - name: Install pkg-config and friends
-        shell: bash
-        run: |
-          mkdir -p .local
-          curl -fSLO http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/pkg-config_0.26-1_win32.zip
-          unzip pkg-config_0.26-1_win32.zip "bin/*.exe" -d .local
-          rm pkg-config_0.26-1_win32.zip
-          curl -fSLO http://ftp.gnome.org/pub/gnome/binaries/win32/glib/2.28/glib_2.28.8-1_win32.zip
-          unzip glib_2.28.8-1_win32.zip "bin/*.dll" -d .local
-          rm glib_2.28.8-1_win32.zip
-          curl -fSLO http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/gettext-runtime_0.18.1.1-2_win32.zip
-          unzip gettext-runtime_0.18.1.1-2_win32.zip "bin/*.dll" -d .local
-          rm gettext-runtime_0.18.1.1-2_win32.zip
-
       - name: Show version information
         shell: bash
         run: |
-          export PATH="$(pwd)/.local/bin:$PATH"
           gcc --version || true
-          pkg-config --version || true
           rustup -V
           rustup toolchain list
           rustup default
@@ -205,14 +168,9 @@ jobs:
               ;;
           esac
 
-      - name: Debug before running build
-        uses: fawazahmed0/action-debug-vscode@main
-
       - name: Build and check (without '--target')
         shell: bash
         run: |
-          export PATH="$(pwd)/.local/bin:$PATH"
-          export PKG_CONFIG_PATH="$(pwd)/.lua:$PKG_CONFIG_PATH"
           case ${{ matrix.lang }} in
             py)
               cd examples/mixed-rust-python-project
@@ -234,8 +192,6 @@ jobs:
       - name: Build and check (with '--target')
         shell: bash
         run: |
-          export PATH="$(pwd)/.local/bin:$PATH"
-          export PKG_CONFIG_PATH="$(pwd)/.lua:$PKG_CONFIG_PATH"
           case ${{ matrix.lang }} in
             py)
               cd examples/mixed-rust-python-project
