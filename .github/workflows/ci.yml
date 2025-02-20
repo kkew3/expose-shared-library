@@ -133,11 +133,17 @@ jobs:
         uses: leafo/gh-actions-lua@v10
         with:
           luaVersion: '5.1.5'
+      - name: Copy lua lib files
+        shell: bash
+        run: |
+          cd .lua/lib
+          cp lua51.dll lua.dll
+          cp lua51.lib lua.lib
       - name: Export lua env variables
         shell: bash
         run: |
           echo LUA_LIB="$(pwd)/.lua/lib" >> $GITHUB_ENV
-          echo LUA_LIB_NAME="lua51" >> $GITHUB_ENV
+          echo LUA_LIB_NAME="lua" >> $GITHUB_ENV
           echo "$(pwd)/.lua/lib" >> $GITHUB_PATH
 
       - name: Install Rust toolchain
