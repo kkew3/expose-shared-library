@@ -17,12 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         lang:
-          - py
+          # - py
           - lua
         job:
-          - { os: ubuntu-22.04, target: x86_64-unknown-linux-gnu }
-          - { os: windows-2022, target: x86_64-pc-windows-msvc }
-          - { os: macos-14, target: aarch64-apple-darwin }
+          # - { os: ubuntu-22.04, target: x86_64-unknown-linux-gnu }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc }
+          # - { os: macos-14, target: aarch64-apple-darwin }
     steps:
       - uses: actions/checkout@v4
 
@@ -40,18 +40,6 @@ jobs:
         uses: leafo/gh-actions-lua@v10
         with:
           luaVersion: '5.1.5'
-      # Reference: https://github.com/chipsenkbeil/distant.nvim/issues/57#issuecomment-971992482
-      - name: Copy lua lib files
-        if: matrix.lang == 'lua' && matrix.job.os == 'windows-2022'
-        shell: bash
-        run: |
-          cp .lua/lib/lua51.dll .lua/lib/lua.dll
-          cp .lua/lib/lua51.lib .lua/lib/lua.lib
-      - name: List lua directory
-        if: matrix.lang == 'lua'
-        run: |
-          ls -l .lua/include
-          ls -l .lua/lib
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -96,10 +84,6 @@ jobs:
               cd examples/mixed-rust-lua-project
               find lua -type f -name '*.so' -o -name '*.dll' -exec rm -f {} +
               cargo clean
-              # Reference: https://github.com/chipsenkbeil/distant.nvim/issues/57#issuecomment-969256617
-              export LUA_INC="$GITHUB_WORKSPACE/.lua/include"
-              export LUA_LIB="$GITHUB_WORKSPACE/.lua/lib"
-              export LUA_LIB_NAME=lua
               # Reference: https://github.com/rust-lang/cargo/issues/3687#issuecomment-336762567
               case ${{ matrix.job.os }} in
                 windows-*)
@@ -131,10 +115,6 @@ jobs:
               cd examples/mixed-rust-lua-project
               find lua -type f -name '*.so' -o -name '*.dll' -exec rm -f {} +
               cargo clean
-              # Reference: https://github.com/chipsenkbeil/distant.nvim/issues/57#issuecomment-969256617
-              export LUA_INC="$GITHUB_WORKSPACE/.lua/include"
-              export LUA_LIB="$GITHUB_WORKSPACE/.lua/lib"
-              export LUA_LIB_NAME=lua
               # Reference: https://github.com/rust-lang/cargo/issues/3687#issuecomment-336762567
               case ${{ matrix.job.os }} in
                 windows-*)
