@@ -134,16 +134,18 @@ jobs:
         with:
           luaVersion: '5.1.5'
       - name: Copy lua lib files
+        if: matrix.lang == 'lua'
         shell: bash
         run: |
           cd .lua/lib
           cp lua51.dll lua.dll
-          cp lua51.lib lua.lib
+          cp lua51.dll liblua.dll
+          cp lua51.dll liblua51.dll
       - name: Export lua env variables
         shell: bash
         run: |
           echo LUA_LIB="$(pwd)/.lua/lib" >> $GITHUB_ENV
-          echo LUA_LIB_NAME="lua" >> $GITHUB_ENV
+          echo LUA_LIB_NAME="lua51" >> $GITHUB_ENV
           echo "$(pwd)/.lua/lib" >> $GITHUB_PATH
 
       - name: Install Rust toolchain
@@ -173,6 +175,9 @@ jobs:
               lua -v
               ;;
           esac
+
+      - name: Debug before running build
+        uses: fawazahmed0/action-debug-vscode@main
 
       - name: Build and check (without '--target')
         shell: bash
