@@ -205,9 +205,6 @@ jobs:
               ;;
           esac
 
-      - name: Debug before running build
-        uses: fawazahmed0/action-debug-vscode@main
-
       - name: Build and check (without '--target')
         shell: bash
         run: |
