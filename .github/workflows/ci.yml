@@ -133,6 +133,19 @@ jobs:
         uses: leafo/gh-actions-lua@v10
         with:
           luaVersion: '5.1.5'
+      - name: Copy lua lib
+        shell: bash
+        run: |
+          cd .lua/lib
+          cp lua51.dll liblua51.dll
+          cp lua51.lib liblua51.lib
+      - name: Create lua pc
+        shell: bash
+        run: |
+          cd .lua
+          echo "Name: Lua" > lua.pc
+          echo "Cflags: -I$(pwd)/include" >> lua.pc
+          echo "Libs: -L$(pwd)/lib -llua51 -lm" >> lua.pc
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -157,24 +170,10 @@ jobs:
           curl -fSLO http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/gettext-runtime_0.18.1.1-2_win32.zip
           unzip gettext-runtime_0.18.1.1-2_win32.zip "bin/*.dll" -d .local
           rm gettext-runtime_0.18.1.1-2_win32.zip
-          echo "$(pwd)/.local" >> $GITHUB_PATH
-
-      - name: Setup msys2 and install dependencies
-        uses: msys2/setup-msys2@v2
-        with:
-          install: >-
-            gcc
-            mingw-w64-x86_64-lua51
-            mingw-w64-x86_64-python
-            mingw-w64-x86_64-pkg-config
-
-      - name: Debug before showing version
-        uses: fawazahmed0/action-debug-vscode@main
 
       - name: Show version information
-        shell: msys2 {0}
+        shell: bash
         run: |
-          export PATH="$CARGO_HOME:$PATH"
           gcc --version || true
           rustup -V
           rustup toolchain list
@@ -191,9 +190,10 @@ jobs:
           esac
 
       - name: Build and check (without '--target')
-        shell: msys2 {0}
+        shell: bash
         run: |
-          export PATH="$CARGO_HOME:$PATH"
+          export PATH="$(pwd)/.local/bin:$PATH"
+          export PKG_CONFIG_PATH="$(pwd)/.lua:$PKG_CONFIG_PATH"
           case ${{ matrix.lang }} in
             py)
               cd examples/mixed-rust-python-project
@@ -209,13 +209,14 @@ jobs:
               cargo clean
               cargo build --release
               cd lua
-              lua5.1 main.lua
+              lua main.lua
               ;;
           esac
       - name: Build and check (with '--target')
-        shell: msys2 {0}
+        shell: bash
         run: |
-          export PATH="$CARGO_HOME:$PATH"
+          export PATH="$(pwd)/.local/bin:$PATH"
+          export PKG_CONFIG_PATH="$(pwd)/.lua:$PKG_CONFIG_PATH"
           case ${{ matrix.lang }} in
             py)
               cd examples/mixed-rust-python-project
@@ -231,6 +232,6 @@ jobs:
               cargo clean
               cargo build --release --target=${{ matrix.job.target }}
               cd lua
-              lua5.1 main.lua
+              lua main.lua
               ;;
           esac
