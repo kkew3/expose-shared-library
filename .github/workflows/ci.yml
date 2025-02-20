@@ -126,6 +126,7 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           install: >-
+            gcc
             mingw-w64-x86_64-lua51
             mingw-w64-x86_64-python
             mingw-w64-x86_64-pkg-config
@@ -135,7 +136,7 @@ jobs:
         run: |
           curl -fSLO https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-gnu/rustup-init.exe
           env RUSTUP_HOME=.rustup CARGO_HOME=.cargo ./rustup-init.exe -y --default-toolchain stable --no-modify-path --verbose
-          echo .cargo/bin >> $GITHUB_PATH
+          echo CARGO_HOME="$(pwd)/.cargo/bin" >> $GITHUB_ENV
 
       - name: Debug before showing version
         uses: fawazahmed0/action-debug-vscode@main
@@ -143,6 +144,7 @@ jobs:
       - name: Show version information
         shell: msys2 {0}
         run: |
+          export PATH="$CARGO_HOME:$PATH"
           gcc --version || true
           rustup -V
           rustup toolchain list
@@ -161,6 +163,7 @@ jobs:
       - name: Build and check (without '--target')
         shell: msys2 {0}
         run: |
+          export PATH="$CARGO_HOME:$PATH"
           case ${{ matrix.lang }} in
             py)
               cd examples/mixed-rust-python-project
@@ -182,6 +185,7 @@ jobs:
       - name: Build and check (with '--target')
         shell: msys2 {0}
         run: |
+          export PATH="$CARGO_HOME:$PATH"
           case ${{ matrix.lang }} in
             py)
               cd examples/mixed-rust-python-project
